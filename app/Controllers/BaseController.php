@@ -7,6 +7,8 @@ use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Validation\Exceptions\ValidationException;
+use Config\Services;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -56,5 +58,36 @@ abstract class BaseController extends Controller {
   
   public function getResponse(array $responseBody, int $statusCode = ResponseInterface::HTTP_OK): ResponseInterface {
     return $this->response->setStatusCode($statusCode)->setJSON($responseBody);
+  }
+  
+  public function getRequestInput(IncomingRequest $request) {
+    $input = $request->getPost();
+    
+    if (empty($input)) {
+      $input = json_decode($request->getBody(), true);
+    }
+    return $input;
+  }
+  
+  // funcion encargada de la validación del JSON obtenido (en la version 4.6 de codeigniter ya no es necesario trabajar así)
+  public function validateRequest($input, array $rules, array $messages = []) {
+    $this->validator = Services::validation()->setRules($rules);
+    
+    if (is_string($rules)) {
+      $validation = config('Validation');
+      
+      if (!isset($validation->$rules)) {
+        throw ValidationException::forRuleNotFound($rules);
+      }
+      if (!$messages) {
+        $errorName = $rules . '_errors';
+        $messages = $validation->$errorName ?? [];
+      }
+      
+      $rules = $validation->$rules;
+    }
+    
+    return $this->validator->setRules($rules, $messages)->run($input);
+    
   }
 }

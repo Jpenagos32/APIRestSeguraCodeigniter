@@ -15,6 +15,21 @@ obtener las variables de entorno de JWT
 5. Crear filtros para poder proteger las rutas en `app/Filters/JWTAuthFilter.php`
 6. En el archivo `app/Config/Filters.php` registrar el filtro con un nuevo alias para poder ser usado para ello
 se agrega  en el arrreglo `$aliases`
+7. En el arreglo `$filters` del archivo `app/Config/Filters.php` agregar el filtro creado en el punto 6
+dandole una propiedad `before` y las rutas a las cuales se debe aplicar el filtro.
+ejemplo:
+   ```php
+   public array $filters = [
+    // Agregar el filtro "auth" antes de ingresar a los endpoints
+    'auth' => [
+      'before' => [
+        //rutas que tendrán filtro
+        'client/*', 
+        'client'
+      ]
+    ]
+   ];
+   ```
 
 ## What is CodeIgniter?
 
