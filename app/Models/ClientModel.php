@@ -10,6 +10,8 @@ class ClientModel extends Model {
   protected $allowedFields = [
     'name', 'email', 'retainer_fee'
   ];
+  
+  protected $useTimestamps = true;
   protected $updatedField = 'updated_at';
   
   //callbacks https://www.codeigniter.com/user_guide/models/model.html#callbacks

@@ -3,6 +3,7 @@
 // enlace a la documentacion de helpers: https://www.codeigniter.com/user_guide/general/helpers.html#
 use App\Models\UserModel;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 // FUNCIONES NECESARIAS PARA AUTENTICACION CON JWT
 
@@ -28,7 +29,8 @@ function getJWTFromRequest($authHeader): string {
 function validateJWTFromRequest(string $encodedToken): void {
   //$key = getenv('JWT_SECRET_KEY');
   $key = \Config\Services::getSecretKey();
-  $decodedToken = JWT::decode($encodedToken, $key, ['HS256']);
+  $headers = ['HS256'];
+  $decodedToken = JWT::decode($encodedToken, new Key($key, 'HS256'));
   
   $userModel = new UserModel();
   $userModel->findUserByEmail($decodedToken->email);
